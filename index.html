@@ -1,10 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <title>Mac OS</title>
-        <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css"/>
-        <script src="https://cdn.jsdelivr.net/npm/@"></script>
-    </head>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Mac OS</title>
+    <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body class="font-['Chicago'] text-black h-screen w-screen flex flex-col">
+
+    <nav class="bg-white w-screen h-10 px-5 flex justify-between items-center pl-5 pr-5 shadow-[0_2px_0_0_#000]">
+        <ul role="menu-bar" class="flex items-center gap-4 text-lg! h-fit">
+            <li>
+                <img src="assets/icons/apple-icon.svg" alt="Apple icon">
+            </li>
+            <li role="menu-item" tabindex="0" aria-haspopup="true">
+                File
+                <ul role="menu">
+                    <li role="menu-item"><a href="#menu">Action</a></li>
+                </ul>
+            </li>
+            <li role="menu-Item" tabindex="0" aria-haspopup="true">
+                Edit
+                <ul role="menu">
+                    <li role="menu-item"><a href="#menu">Action</a></li>
+                </ul>
+            </li>
+            <li role="menu-item" tabindex="0" aria-haspopup="true">
+                View
+                <ul role="menu">
+                    <li role="menu-item"><a href="#menu">Action</a></li>
+                </ul>
+            </li>
+            <li role="meni-item" tabindex="0" aria-haspopup="true">
+                Special
+                <ul role="menu">
+                    <li role="menu-item"><a href="#menu">You</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul role="menu-bar">
+            <li id="clock" class="text-lg!"></li>
+        </ul>
+    </nav>
+    <!--homePage with icons-->
+    <div class="home pt-8 p-2">
+        <div id="trash" class="flex flex-col justify-center items-center w-fit gap-y-1" draggable="true">
+            <div class="imagecontent">
+                <img src="assets/icons/trash.svg" alt="trash" width="24" height="24" draggable="false">
+            </div>
+            <div>
+                <p class="text-sm! w-fit font-normal bg-white text-black">Trash</p>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>
