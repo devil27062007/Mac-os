@@ -1,13 +1,13 @@
 .home{
-    position : relative ;
-    width : 100% ;
+    position: relative;
+    width: 100%;
 }
 
 .homeIcons {
-    width : 64px ;
-    height : 64px ;
-    display : flex ;
-    flex-direction : column ;
+    width: 68px;
+    height: 68px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content:center;
     gap: 4px;
@@ -15,7 +15,7 @@
     user-select: none;
 }
 
-/*  scalines  */
+
 body::before{
     content: "";
     position: fixed;
@@ -24,16 +24,16 @@ body::before{
     z-index: 9999;
 
     background: 
-    linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-    linear-gradient(90deg,
-    rgba(255, 0, 0, 0.06),
-    rgba(0, 225, 0, 0.02),
-    rgba(0, 0, 255, 0.06));
+        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg,
+            rgba(255, 0, 0, 0.06),
+            rgba(0, 225, 0, 0.02),
+            rgba(0, 0, 255, 0.06));
 
     background-size:100% 2px, 3px 100% ;
 }
 
-/*  screen flicker  */
+
 body::after {
     content: "";
     position: fixed;
