@@ -1,4 +1,4 @@
-.home{
+.home {
     position: relative;
     width: 100%;
 }
@@ -17,7 +17,7 @@
 
 
 
-body::before{
+body::before {
     content: "";
     position: fixed;
     inset: 0;
@@ -45,16 +45,16 @@ body::after {
     animation: crt-flicker 0.01s infinite;
 }
 
-@keyframes crt-flicker{
+@keyframes crt-flicker {
     0% {
         opacity: 0.1;
     }
             
-    25%{
+    25% {
         opacity: 0.2;
     }
 
-    50%{
+    50% {
         opacity: 0.05;
     }
 
@@ -62,7 +62,7 @@ body::after {
         opacity: 0.15;
     }
 
-    100%{
+    100% {
         opacity: 0.1;
     }
 }
