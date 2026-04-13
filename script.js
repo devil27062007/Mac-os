@@ -32,9 +32,9 @@ function init() {
         element.parentNode.insertBefore(beforeElement, element);
 
         element.addEventListener('click', (event) => {
-            event.stopPropagation;
-            document.querySelectorAll('homeIcons').forEach((element) => {
-                element.computedStyleMap.filter = '';
+            event.stopPropagation();
+            document.querySelectorAll('.homeIcons').forEach((element) => {
+                element.style.filter = '';
             })
             element.style.filter = 'invert(1)';
         })
@@ -64,14 +64,6 @@ function init() {
         dragElementWindow(win);
     });
 
-    document.querySelectorAll(".close").forEach(btn =>{
-        btn.addEventListener("click", (e) =>{
-            const win = e.target.closest(".window");
-            win.style.display = "none";
-        })
-
-    });
-
 
     document.querySelectorAll(".resize").forEach(btn =>{
         btn.addEventListener("click", (e) =>{
@@ -93,7 +85,7 @@ function init() {
                 win.dataset.left = win.style.left;
 
                 win.style.width = homeRect.width + 'px';
-                win.style.height = homeRect.width + 'px';
+                win.style.height = homeRect.height + 'px';
                 win.style.top = homeRect.top + 'px';
                 win.style.left = homeRect.left + 'px';
 
@@ -101,6 +93,18 @@ function init() {
 
                 win.style.margin = '0';
             }
+        });
+
+        // to make all close buttons works to close the wiondow
+        document.querySelectorAll(".close").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const win = e.target.closest(".window");
+                win.style.display = "none";
+                win.style.top = win.dataset.top;
+                win.style.left = win.dataset.left;
+                win.style.width = win.dataset.width;
+                win.style.height = win.dataset.height;
+            })
         });
     });
 
@@ -160,8 +164,8 @@ function dragElementWindow(element) {
         let newX = parseFloat(element.style.left) - currentX;
         let newY = parseFloat(element.style.top) - currentY;
 
-        newX = Math.max(0, Math.min(newX, parentRect.width - childRect.width));
-        newY = Math.max(0, Math.min(newY, parentRect.height - childRect.height));
+        newX = Math.max(0, Math.min(newX, window.innerWidth - childRect.width));
+        newY = Math.max(homeRect.top, Math.min(newY, window.innerHeight - childRect.height));
 
         // update the elements new position
         element.style.position = 'absolute';
@@ -174,7 +178,7 @@ function dragElementWindow(element) {
             const rect = element.getBoundingClientRect();
             element.style.left = rect.left + 'px';
             element.style.top = rect.top + 'px';
-            element.style.dragging = 'true';
+            element.dataset.dragging = 'true';
         }
     };
 
@@ -204,17 +208,17 @@ function dragElement(element){
         initialX = e.clientX;
         initialY = e.clientY;
 
-        document.onmousedown = stopDragging;
-        document.onmousedown = dragging;
+        document.onmouseup = stopDragging;
+        document.onmousemove = dragging;
     }
     element.onmousedown = startDragging;
 
 
     function dragging(e){
         e = e || window.event;
-        e,preventDefault();
+        e.preventDefault();
 
-        const parentRect = document.querySelectorAll(".home").getBoundingClientRect();
+        const parentRect = document.querySelector(".home").getBoundingClientRect();
         const childRect = element.getBoundingClientRect();
 
         console.log("parentRect: ", parentRect);
