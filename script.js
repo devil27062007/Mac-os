@@ -1,66 +1,125 @@
-// Make the DIV element draggable:
-
-const homeRect = document.querySelectorAll(".home").getBoundingClientRect();
+let homeRect;
 const iconSize = 68;
 
-const iconsPerCol = Math.floor(homeRect.height / iconSize);
+let iconsPerCol;
 
 let row = 0;
 let col = 0;
 
-document.querySelectorAll('.homeIcons').forEach((element) => {
+function init() {
+    homeRect = document.querySelector(".home").getBoundingClientRect();
+    iconsPerCol = Math.floor(homeRect.height / iconSize);
 
-    const rect = element.getBoundingClientRect();
-    element.style.position =  'absolute';
-    element.style.left = (col * iconSize) + 'px';
-    element.style.top = (row * iconSize) + 'px';
+    //for arranged so it will arrange in grid fills col first
+    document.querySelectorAll('.homeIcons').forEach((element) => {
 
-    row++;
-    if(row >= iconsPerCol){
-        row = 0;
-        col++;
-    }
+        const rect = element.getBoundingClientRect();
+        element.style.position = 'absolute';
+        element.style.left = (col * iconSize) + 'px';
+        element.style.top = (row * iconSize) + 'px';
 
-    const beforeElement = document.createElement('div');
-    beforeElement.style.width = rect.width + 'px';
-    beforeElement.style.height = rect.height + 'px';
-    beforeElement.style.visibility = 'hidden';
+        row++;
+        if (row >= iconsPerCol) {
+            row = 0;
+            col++;
+        }
 
-    element.parentNode.insertBefore(beforeElement, element);
+        const beforeElement = document.createElement('div');
+        beforeElement.style.width = rect.width + 'px';
+        beforeElement.style.height = rect.height + 'px';
+        beforeElement.style.visibility = 'hidden';
 
-    element.addEventListener('click', (event) => {
-        event.stopPropagation;
-        document.querySelectorAll('homeIcons').forEach((element) => {
-            element.computedStyleMap.filter = '';
+        element.parentNode.insertBefore(beforeElement, element);
+
+        element.addEventListener('click', (event) => {
+            event.stopPropagation;
+            document.querySelectorAll('homeIcons').forEach((element) => {
+                element.computedStyleMap.filter = '';
+            })
+            element.style.filter = 'invert(1)';
         })
-        element.style.filter = 'invert(1)';
-    })
-    dragElement(element);
-});
+        dragElement(element);
+    });
 
-document.body.addEventListener('click', (e) => {
-    if(!e.target.closest('.homeIcons')){
-        document.querySelectorAll('.homeIcons').forEach((element) =>{
-            element.style.filter = '';
+    //for the fee of clicking the icons so color changes the points out that i clicked
+    document.body.addEventListener('click', (e) => {
+        if(!e.target.closest('.homeIcons')){
+            document.querySelectorAll('.homeIcons').forEach((element) =>{
+                element.style.filter = '';
+            })
+        }
+    });
+
+
+    document.querySelectorAll(".window").forEach(win=>{
+
+        win.style.visibility = "hidden";
+        win.style.display = "block";
+
+        win.style.top = (window.innerHeight / 2) - (win.offsetHeight / 2) + 'px';
+        win.style.left = (window.innerWidth / 2) - (win.offsetWidth / 2) + 'px';
+
+        win.style.visibility = "";
+        win.style.display = "none";
+        dragElementWindow(win);
+    });
+
+    document.querySelectorAll(".close").forEach(btn =>{
+        btn.addEventListener("click", (e) =>{
+            const win = e.target.closest(".window");
+            win.style.display = "none";
         })
-    }
-});
 
-document.querySelectorAll(".window").forEach(win =>{
-
-    win.style.visibility = "hidden";
-    win.style.display = "block";
-
-    win.style.top = (window.innerHeight / 2) - (win.offsetHeight / 2) + 'px';
-    win.style.left = (window.innerWidth / 2) - (win.offsetWidth / 2) + 'px';
-
-    win.style.visibility = "";
-    win.style.display = "none";
-});
+    });
 
 
-function dragElement(element){
-    
+    document.querySelectorAll(".resize").forEach(btn =>{
+        btn.addEventListener("click", (e) =>{
+            const win = e.target.closest(".window");
+
+            if(win.dataset.full === "true"){
+                win.style.width = win.dataset.width;
+                win.style.height = win.dataset.height;
+                win.style.top = win.dataset.top;
+                win.style.left = win.dataset.left;
+
+                win.dataset.full = "false";
+
+                win.style.margin = '';
+            } else {
+                win.dataset.width = win.style.width;
+                win.dataset.height = win.style.height;
+                win.dataset.top = win.style.top;
+                win.dataset.left = win.style.left;
+
+                win.style.width = homeRect.width + 'px';
+                win.style.height = homeRect.width + 'px';
+                win.style.top = homeRect.top + 'px';
+                win.style.left = homeRect.left + 'px';
+
+                win.dataset.full = "true";
+
+                win.style.margin = '0';
+            }
+        });
+    });
+
+    //double clicking the window will open window fixed pos but can drag around
+    document.querySelectorAll(".homeIcons").forEach(btn =>{
+        btn.addEventListener("dblclick", (e) =>{
+            e.stopPropagation();
+            const windowId = btn.id.replace("-icon", "");
+
+            const windowDiv = document.getElementById(windowId)
+            if (windowDiv) {
+                windowDiv.style.display = "block";
+            }
+        })
+    });
+}
+
+function dragElement(element) {
+
     var initialX = 0;
     var initialY = 0;
     var currentX = 0;
@@ -68,7 +127,7 @@ function dragElement(element){
     console.log(element);
 
 
-    function startDragging(e){
+    function startDragging(e) {
         e = e || window.event;
         e.preventDefault();
 
@@ -80,19 +139,19 @@ function dragElement(element){
     };
     element.onmousedown = startDragging;
 
-    
-    function dragging(e){
+
+    function dragging(e) {
         e = e || window.event;
         e.preventDefault();
 
         const parentRect = document.querySelector(".home").getBoundingClientRect();
         const childRect = element.getBoundingClientRect();
 
-        console.log("parent: ",parentRect)
+        console.log("parent: ", parentRect)
         console.log("child: ", childRect)
         console.log("Y range: ", parentRect.top, '->', parentRect.bottom - childRect.height)
-        
-        
+
+
         currentX = initialX - e.clientX;
         currentY = initialY - e.clientY;
 
@@ -104,8 +163,8 @@ function dragElement(element){
 
         newX = Math.max(0, Math.min(newX, parentRect.width - childRect.width));
         newY = Math.max(0, Math.min(newY, parentRect.height - childRect.height));
-    
-        
+
+
         element.style.filter = 'invert(1)';
         element.style.position = 'absolute';
         element.style.top = (newY) + 'px';
@@ -113,7 +172,7 @@ function dragElement(element){
     };
 
 
-    function stopDragging(){
+    function stopDragging() {
         element.style.filter = '';
         document.onmouseup = null;
         document.onmousemove = null;
@@ -132,7 +191,7 @@ function updateTime() {
 
 
 document.querySelectorAll(".close").forEach(btn => {
-    btn.addEventListener("click", (e) =>{
+    btn.addEventListener("click", (e) => {
         const win = e.target.closest(".window");
         win.style.display = "none";
     });
@@ -143,7 +202,7 @@ document.querySelectorAll(".resize").forEach(btn => {
     btn.addEventListener("click", (e) => {
         const win = e.target.closest(".window");
 
-        if(win.dataset.full === "true"){
+        if (win.dataset.full === "true") {
             win.style.width = win.dataset.width;
             win.style.height = win.dataset.height;
             win.style.top = win.dataset.top;
@@ -176,7 +235,7 @@ document.querySelectorAll(".homeIcons").forEach(btn => {
         const windowId = btn.id.replace("-icon", "");
 
         const windowDiv = document.getElementById(windowId);
-        if(windowDiv){
+        if (windowDiv) {
             windowDiv.style.display = "block";
         };
     });
