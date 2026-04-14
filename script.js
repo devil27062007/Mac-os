@@ -6,6 +6,9 @@ let iconsPerCol;
 let row = 0;
 let col = 0;
 
+let activeWindows = [];
+let files = [];
+
 function init() {
     homeRect = document.querySelector(".home").getBoundingClientRect();
     iconsPerCol = Math.floor(homeRect.height / iconSize);
@@ -31,6 +34,12 @@ function init() {
 
         element.parentNode.insertBefore(beforeElement, element);
 
+        const fileId = element.id.replace("-icon","");
+        const label = element.querySelector("#label").textContent;
+        const imgSrc = element.querySelector("img").src;
+
+        files.push({ id: fileId, label: label, iconSrc: imgSrc });
+
         element.addEventListener('click', (event) => {
             event.stopPropagation();
             document.querySelectorAll('.homeIcons').forEach((element) => {
@@ -54,17 +63,25 @@ function init() {
     document.querySelectorAll(".window").forEach(win=>{
 
         win.style.visibility = "hidden";
-        win.style.display = "block";
+        win.style.setProperty('display', 'block', 'important');
 
         win.style.top = (window.innerHeight / 2) - (win.offsetHeight / 2) + 'px';
         win.style.left = (window.innerWidth / 2) - (win.offsetWidth / 2) + 'px';
 
         win.style.visibility = "";
-        win.style.display = "none";
+        win.style.setProperty('display', 'block', 'important');
         dragElementWindow(win);
     });
+    //to make click move the window top above all other window
+    document.querySelectorAll(".window").forEach(win => {
+        win.addEventListener("click", (e) => {
+            if(win.style.display!== 'none'){
+                bringWindowToTop(win.id);
+            }
+        })
+    })
 
-
+    //to resize the window to either full or the default one
     document.querySelectorAll(".resize").forEach(btn =>{
         btn.addEventListener("click", (e) =>{
             const win = e.target.closest(".window");
@@ -77,7 +94,7 @@ function init() {
 
                 win.dataset.full = "false";
 
-                win.style.margin = '';
+                win.style.margin = '0';
             } else {
                 win.dataset.width = win.style.width;
                 win.dataset.height = win.style.height;
@@ -99,13 +116,14 @@ function init() {
         document.querySelectorAll(".close").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const win = e.target.closest(".window");
-                win.style.display = "none";
+                win.style.setProperty('display', 'none', 'important');
                 if(win.dataset.top) {
                 win.style.top = win.dataset.top;
                 win.style.left = win.dataset.left;
                 win.style.width = win.dataset.width;
                 win.style.height = win.dataset.height;
                 }
+                activeWindows = activeWindows.filter(id => id !== win.id);
             })
         });
         // to make cancel btn close the window
@@ -113,12 +131,14 @@ function init() {
             btn.addEventListener("click", (e) => {
                 let win = e.target.closest(".window");
                 if(win) {
-                    win.style.display = "none";
+                    win.style.setProperty('display', 'none', 'important');
+                    activeWindows = activeWindows.filter( id => id !== win.id);
                     return;
                 }
                 win = e.target.closest(".alert-box");
                 if (win) {
-                    win.style.display = "none";
+                    win.style.setProperty('display', 'none', 'important');
+                    activeWindows = activeWindows.filter( id => id !== win.id);
                     return;
                 }
             })
@@ -137,7 +157,7 @@ function init() {
 
                 const alertBox = document.querySelector(".alert-box");
                 alertBox.style.visibility = "hidden";
-                alertBox.style.display = "none";
+                alertBox.style.setProperty('display', 'none', 'important');
                 alertBox.style.left = (window.innerHeight / 2) - (alertBox.offsetWidth / 2) + 'px';
                 alertBox.style.top = (window.innerHeight / 2) - (alertBox.offsetHeight / 2) + 'px';
                 alertBox.style.zIndex = "999";
@@ -145,16 +165,19 @@ function init() {
                 alertBox.style.visibility = "";
             
             } else {
-                document.querySelector("#create").closest(".window").style.display = "none";
-
+                document.querySelector("#create").closest(".window").style.setProperty('display', 'none', 'important');
+                
                 console.log(value);
+
+                createIcons("read-file-icon", "assets/icons/hypercard.svg", value);
+
             }
         });
 
         //ok button to work for alert button
         document.querySelector("#alert-okay").addEventListener('click', (e) =>{
             const alertBox = document.querySelector(".alert-box");
-            alertBox.style.display = "none";
+            alertBox.style.setProperty('display', 'none', 'important');
         })
 
     //double clicking the window will open window fixed pos but can drag around
@@ -165,8 +188,15 @@ function init() {
 
             const windowDiv = document.getElementById(windowId)
             if (windowDiv) {
-                windowDiv.style.display = "block";
+                const displayMode = windowDiv.id === 'read-file' ? 'flex' : 'block';
+                windowDiv.style.setProperty('display', 'none', 'important');
+                windowDiv.style.margin = '0';
+                const id = activeWindows.indexOf(windowId);
+                if (id === -1) activeWindows.push(windowId);
+
+                bringWindowToTop(windowId);
             }
+            console.log(activeWindows);
         })
     });
 }
@@ -184,13 +214,22 @@ function dragElementWindow(element) {
         //e = e || window.event;
         if(e.target.closest('button')) return;
         if(e.target.closest('input')) return;
+        if (e.target.closest(".window-pane")) return;
 
         e.preventDefault();
+        // get the mouse cursor position at startup
+
+        const rect = element.getBoundingClientRect();
+        element.style.top = rect.top + 'px';
+        element.style.left = rect.left + 'px';
+        element.style.margin = '0';
 
         initialX = e.clientX;
         initialY = e.clientY;
 
         element.style.margin = '0';
+        //set up event listeners for mouse movement and mouse button release
+        bringWindowToTop(element.id);
 
         document.onmouseup = stopDragging;
         document.onmousemove = dragging;
@@ -346,17 +385,17 @@ function playLoadingAnimation() {
 
     setTimeout(() => {
         fadeOut(happyMac, 100, () => {
-            happyMac.style.display = 'none';
+            happyMac.style.setProperty('display', 'none', 'important');
 
-            welcome.style.display = 'flex';
+            welcome.style.setProperty('display', 'flex', 'important');
             welcome.style.opacity = '0';
             fadeIn(welcome, 1500);
 
             setTimeout(() => {
                 fadeOut(welcome, 100, () => {
-                    welcome.style.display = 'none';
-                    parentForAnimation.style.display = 'none';
-                    document.querySelector(".after-loading").style.display = "flex";
+                    welcome.style.setProperty('display', 'none', 'important');
+                    parentForAnimation.style.setProperty('display', 'none', 'important');
+                    document.querySelector(".after-loading").style.setProperty('display', 'flex', 'important');
                     init();
                 });
             }, 100);
@@ -368,7 +407,24 @@ playLoadingAnimation();
 
 document.getElementById("open").addEventListener('click', (e) => {
     const win = document.getElementById("open-folder");
-    win.style.display = "block";
+    win.style.setProperty('display', 'block', 'important');
+
+    const fileList = document.getElementById("file-list");
+    fileList.innerHTML = "";
+
+    bringWindowToTop("openp-folder");
+
+    files.forEach(file => {
+        const item = document.createElement("div");
+        item.className = "flex items-center gap-2 cursor-pointer px-1";
+        item.innerHTML = `
+        <img src="${file.iconSrc}" width="24" height="24" />
+        <span class="text-sm!">${file.label}</span>`
+
+        item.addEventListener("dblclick", (e) => {
+            const win = document.getElementById(file.id);
+        })
+    })
     document.activeElement.blur();
 });
 
