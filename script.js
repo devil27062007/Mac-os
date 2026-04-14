@@ -423,18 +423,122 @@ document.getElementById("open").addEventListener('click', (e) => {
 
         item.addEventListener("dblclick", (e) => {
             const win = document.getElementById(file.id);
+            if(win) {
+                win.style.setProperty("display", "block", "important");
+                const id = activeWindows.indexOf(file.id);
+                if(id === -1) activeWindows.push(file.id);
+                bringWindowToTop(file.id);
+            }
         })
+        fileList.appendChild(item);
     })
+
     document.activeElement.blur();
 });
 
 document.getElementById("new").addEventListener('click', (e) => {
     const win = document.getElementById("new-folder");
-    win.style.display = "block";
+    win.style.setProperty('display', 'block', 'important');
 
     document.activeElement.blur();
+
+    bringWindowToTop("new-folder");
 
     win.style.top = (window.innerHeight / 2) - (win.offsetHeight / 2) + 'px';
     win.style.left = (window.innerWidth / 2) - (win.offsetWidth / 2) + 'px';
     
+});
+
+function createIcons(id, iconSrc, label) {
+    const div = document.createElement("div");
+    div.id = id;
+    div.className = "homeIcons";
+
+    div.innerHTML = `
+    <div>
+    <img src="${iconSrc}" alt="${label} width="24" height="24" draggable="false"/>
+    </div>
+    <div>
+    <p class="text-sm! w-fit font-normal bg-white text-back">${label}</p>
+    </div>
+    `;
+    document.querySelector(".home").appendChild(div);
+
+    const idFile = id.replace("-icon", "");
+
+    file.push({ id: idFile, label: label, iconSrc: iconSrc });
+
+    div.style.position = "absolute";
+    div.style.left = (col * iconSize) + 'px';
+    div.style.top = (row * iconSize) + 'px';
+
+    row++;
+
+    if(row >= iconsPerCol) {
+        row = 0;
+        col++;
+    }
+
+    div.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".homeIcons").forEach(icon => icon.style.filter = '');
+
+        div.style.filter = "invert(1)";
+    })
+
+    dragElement(div);
+
+    div.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        const winId = id.replace("-icon","");
+        const win = document.getElementById(winId);
+        if(win) {
+            const displayMode = win.id === 'read-file' ? 'flex' : 'block';
+            win.style.setProperty('display', displayMode, 'important');
+            win.style.margin = '0';
+            const title = win.querySelector(".tittle");
+            if(title) title.textContent = label;
+
+            const panel = win.querySelector(".window-pane");
+            if(panel) panel.contentEditable = "true";
+            panel.focus();
+
+            const idThere = activeWindows.indexOf(winId);
+            if(idThere === -1) activeWindows.push(winId);
+            bringWindowToTop(winId);
+        }
+        console.log(activeWindows);
+    });
+}
+
+//to close current specific window from nav bar
+document.getElementById("close-win").addEventListener("click", (e) =>{
+    e.stopPropagation();
+    const lastWinId = activeWindows.pop();
+    if (lastWinId) {
+        const lastWinDiv = document.getElementById(lastWinId);
+        lastWinDiv.style.setProperty('display', 'none', 'important');
+    }
+    document.activeElement,blur();
 })
+
+//close all windows from the nav bar
+document.getElementById("close-all-win").addEventListener("click", (e) => {
+    e.stopPropagation();
+    for(let i = 0; i<activeWindows.length; i++){
+        const win = document.getElementById(activeWindows[i]);
+        if(win) win.style.setProperty('display','none','important');
+    }
+    activeWindows = [];
+    document.activeElement,blur();
+});
+
+function bringWindowToTop(winId){
+    if(!winId) return;
+    activeWindows.filter(id => id!== winId);
+    activeWindows.push(winId);
+    activeWindows.forEach((id,index) => {
+        const win = document.getElementById(id);
+        if(win) win.style.zIndex = (100 + index).toString();
+    });
+}

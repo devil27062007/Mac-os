@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="after-loading w-full flex-1 flex flex-col" style="display: none !important;">
-        <!--navbar-->
+        <!--navbar contents-->
         <nav 
             class="bg-white w-screen h-10 px-5 flex justify-between items-center pl-5 pr-5 shadow-[0_2px_0_0_#000]">
             <ul role="menu-bar" class="flex items-center gap-4 text-lg! h-fit">
@@ -105,23 +105,28 @@
             </div>
             <div class="seperator"></div>
 
-            <div class="window-pane">
-                I am second stuff
+            <div class="window-pane flex flex-row">
+                <section class="flex flex-col gap-y-3 w-1/2 border-r-2 border-solid pr-2 border-black" style="justify-content: flex-start;">
+                    <input aria-label="Example text box" type="text" placeholder="file name"/>
+                    <button class="btn shrink-0 flex-grow-0 w-fit" id="open-open">Open</button>
+                </section>
+                <section class="flex flex-col gap-y-1 flex-1 overflow-y-auto idfile-list">
+                </section>
             </div>
         </div>
-        <!--<div class="window fixed w-64 h-48 z-10" id = "new-folder" style="display: none;">
+        <div class="window fixed w-64 h-48 z-10 flex! flex-col! overflow-hidden!" id = "read-folder" 
+        style="display: none !important;">
             <div class="title-bar">
                 <button aria-label="Close" class="close"></button>
-                <h1 class="title">Open</h1>
+                <h1 class="title"></h1>
                 <button aria-label="Resize" class="resize" ></button>
             </div>
             <div class="seperator"></div>
             
-            <div class="window-pane">
-                I am third stuff
+            <div class="window-pane flex-1 overflow-y-auto! min-h-0">
             </div>
-    </div> -->
-        <div class="window scale-down fixed w-64 h-fit p-1 z-10" style="display: none;" id="new-folder">
+    </div>
+        <div class="window scale-down fixed w-64 h-fit p-1 z-10" style="display: none !important;" id="new-folder">
             <div class="title-bar">
                 <button aria-label="Close" class="close"></button>
                 <h1 class="title">New File</h1>
@@ -140,7 +145,7 @@
                 </section>
             </div>
         </div>
-        <div class="alert-box h-fit! w-fit! fixed outer-border scale-down" style="display: none;">
+        <div class="alert-box h-fit! w-fit! fixed outer-border scale-down" style="display: none !important;">
             <div class="inner-border">
                 <div class="alert-contents" style="padding-left: 30px; padding-right: 20px;">
                     <section class="field-row" style="justify-content: flex-start;">
@@ -150,7 +155,6 @@
                         <p class="alert-text text-xl!" id="alert-text" style="padding-left: 10px;"></p>
                     </section>
                     <section class="field-row" style="justify-content: flex-end;">
-                        <!--<button class="btn" id="cancel">Cancel</button>-->
                         <button class="btn" id="alert-okay">Ok</button>
                     </section>
                 </div>
