@@ -94,19 +94,68 @@ function init() {
                 win.style.margin = '0';
             }
         });
-
+    });
         // to make all close buttons works to close the wiondow
         document.querySelectorAll(".close").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const win = e.target.closest(".window");
                 win.style.display = "none";
+                if(win.dataset.top) {
                 win.style.top = win.dataset.top;
                 win.style.left = win.dataset.left;
                 win.style.width = win.dataset.width;
                 win.style.height = win.dataset.height;
+                }
             })
         });
-    });
+        // to make cancel btn close the window
+        document.querySelectorAll("#cancel").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                let win = e.target.closest(".window");
+                if(win) {
+                    win.style.display = "none";
+                    return;
+                }
+                win = e.target.closest(".alert-box");
+                if (win) {
+                    win.style.display = "none";
+                    return;
+                }
+            })
+        })
+
+        //to make submit button works when click
+        document.querySelector('#create').addEventListener("click", (e) => {
+            const input = document.getElementById("file-create");
+            let value = input.value;
+
+            input.value = "";
+
+            if(value.trim() ==="") {
+                const content = document.getElementById("alert-text");
+                content.textContent = "Sorry, enter name to create file.";
+
+                const alertBox = document.querySelector(".alert-box");
+                alertBox.style.visibility = "hidden";
+                alertBox.style.display = "none";
+                alertBox.style.left = (window.innerHeight / 2) - (alertBox.offsetWidth / 2) + 'px';
+                alertBox.style.top = (window.innerHeight / 2) - (alertBox.offsetHeight / 2) + 'px';
+                alertBox.style.zIndex = "999";
+
+                alertBox.style.visibility = "";
+            
+            } else {
+                document.querySelector("#create").closest(".window").style.display = "none";
+
+                console.log(value);
+            }
+        });
+
+        //ok button to work for alert button
+        document.querySelector("#alert-okay").addEventListener('click', (e) =>{
+            const alertBox = document.querySelector(".alert-box");
+            alertBox.style.display = "none";
+        })
 
     //double clicking the window will open window fixed pos but can drag around
     document.querySelectorAll(".homeIcons").forEach(btn =>{
