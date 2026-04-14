@@ -177,12 +177,13 @@ function dragElementWindow(element) {
     var initialY = 0;
     var currentX = 0;
     var currentY = 0;
-    console.log(element);
+    //console.log(element);
 
 
     function startDragging(e) {
         //e = e || window.event;
         if(e.target.closest('button')) return;
+        if(e.target.closest('input')) return;
 
         e.preventDefault();
 
@@ -247,7 +248,7 @@ function dragElement(element){
     var initialY = 0;
     var currentX = 0;
     var currentY = 0;
-    console.log(element);
+    //console.log(element);
 
 
     function startDragging(e){
@@ -341,10 +342,10 @@ function fadeOut(element, duration = 500, onDone) {
 function playLoadingAnimation() {
     happyMac.style.opacity = '0';
 
-    fadeIn(happyMac, 1500);
+    fadeIn(happyMac, 100);
 
     setTimeout(() => {
-        fadeOut(happyMac, 1500, () => {
+        fadeOut(happyMac, 100, () => {
             happyMac.style.display = 'none';
 
             welcome.style.display = 'flex';
@@ -352,15 +353,32 @@ function playLoadingAnimation() {
             fadeIn(welcome, 1500);
 
             setTimeout(() => {
-                fadeOut(welcome, 1500, () => {
+                fadeOut(welcome, 100, () => {
                     welcome.style.display = 'none';
                     parentForAnimation.style.display = 'none';
                     document.querySelector(".after-loading").style.display = "flex";
                     init();
                 });
-            }, 1500);
+            }, 100);
         });
-    }, 1500)
+    }, 100)
 }
 
 playLoadingAnimation();
+
+document.getElementById("open").addEventListener('click', (e) => {
+    const win = document.getElementById("open-folder");
+    win.style.display = "block";
+    document.activeElement.blur();
+});
+
+document.getElementById("new").addEventListener('click', (e) => {
+    const win = document.getElementById("new-folder");
+    win.style.display = "block";
+
+    document.activeElement.blur();
+
+    win.style.top = (window.innerHeight / 2) - (win.offsetHeight / 2) + 'px';
+    win.style.left = (window.innerWidth / 2) - (win.offsetWidth / 2) + 'px';
+    
+})
