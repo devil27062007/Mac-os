@@ -8,7 +8,14 @@ let col = 0;
 
 let activeWindows = [];
 let files = [];
-let activeFolder = null;
+let activeFolder;
+const viewBtns = [
+    document.getElementById("by-name"),
+    document.getElementById("by-kind"),
+];
+setActiveFolder(null);
+
+let trashedFiles = [];
 
 function init() {
     homeRect = document.querySelector(".home").getBoundingClientRect();
@@ -48,6 +55,13 @@ function init() {
             })
             element.style.filter = 'invert(1)';
         })
+
+        const labelP = element.querySelector("p");
+        labelP.addEventListener("dblclick", (e) => {
+            e.stopPropagation();
+            alertBox("You Cant 'Rename' this Folder/File");
+        })
+
         dragElement(element);
     });
 
@@ -127,7 +141,7 @@ function init() {
                 win.style.height = win.dataset.height;
                 }
                 activeWindows = activeWindows.filter(id => id !== win.id);
-                if(activeFolder === win.id) activeFolder = null;
+                if(activeFolder === win.id) setActiveFolder(null);
             })
         });
 
@@ -193,9 +207,9 @@ function init() {
                 if (id === -1) activeWindows.push(windowId);
 
                 if (displayMode === "flex") {
-                    activeFolder = null;
+                    setActiveFolder(null);
                 } else {
-                    activeFolder = windowId;
+                    setActiveFolder(windowId);
                 }
 
                 bringWindowToTop(windowId);
@@ -290,12 +304,19 @@ function dragElement(element){
     var initialY = 0;
     var currentX = 0;
     var currentY = 0;
+    var originalLeft = 0;
+    var originalTop = 0;
     //console.log(element);
 
-
+    //define startDragging function to capture the initial mouse position and set up event listeners
     function startDragging(e){
 
+        // if(e.target.closest(""))
         e.preventDefault();
+        // Get the mouse cursor positionat startup
+
+        originalLeft = element.style.left;
+        originalTop = element.style.top;
 
         initialX = e.clientX;
         initialY = e.clientY;
@@ -342,6 +363,45 @@ function dragElement(element){
         element.style.filter = '';
         document.onmouseup = null;
         document.onmousemove = null;
+
+        const trashRect = document.querySelector("#trash-folder-iconimg").getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+
+        let overLap = (
+            elementRect.left < trashRect.right &&
+            elementRect.right > trashRect.left &&
+            elementRect.top < trashRect.bottom &&
+            elementRect.bottom > trashRect.top
+        );
+
+        if(overLap && element.id !== "trash-folder-icon" && element.id !== "system-folder-icon") {
+            trashFile(element.id);
+            document.getElementById("trash-folder").style.setProperty('display', 'none', 'important');
+            return;
+        } else if (overLap && element.id === "system-folder-icon") {
+            alertBox("You cant Delete System Folder");
+            element.style.left = originalLeft;
+            element.style.top = originalTop;
+            return;
+        }
+
+        document.querySelectorAll(".homeIcons").forEach(icon => {
+            if(icon === element) return;
+
+            const iconRect = icon.getBoundingClientRect();
+
+            overLap = (
+                elementRect.left < iconRect.right &&
+                elementRect.right > iconRect.left &&
+                elementRect.top < iconRect.bottom &&
+                elementRect.bottom > iconRect.top
+            );
+
+            if(overLap) {
+                element.style.left = originalLeft;
+                element.style.top = originalTop;
+            }
+        })
     }
 };
 
@@ -431,9 +491,9 @@ document.getElementById("open").addEventListener('click', (e) => {
                 if(id === -1) activeWindows.push(file.id);
                 bringWindowToTop(file.id);
                 if (file.id.includes("-file")){
-                    activeFolder = null;
+                    setActiveFolder(null);
                 } else {
-                    activeFolder = file.id;
+                    setActiveFolder(file.id);
                 }
             }
         })
@@ -470,6 +530,13 @@ function createIcons(id, iconSrc, label) {
     `;
     document.querySelector(".home").appendChild(div);
 
+    const labelP = div.querySelector("p");
+
+    labelP.addEventListener("dblclick", (e)=> {
+        e.stopPropagation();
+        editIconNames(labelP, div);
+    })
+
     const idFile = id.replace("-icon", "");
 
     file.push({ id: idFile, label: label, iconSrc: iconSrc });
@@ -495,7 +562,7 @@ function createIcons(id, iconSrc, label) {
 
     div.addEventListener('dblclick', (e) => {
         e.stopPropagation();
-        const winId = id.replace("-icon","");
+        const winId = div.id.replace("-icon","");
         const win = document.getElementById(winId);
         if(win) {
             const displayMode = win.id.includes('-file') ? 'flex' : 'block';
@@ -503,7 +570,7 @@ function createIcons(id, iconSrc, label) {
             win.style.setProperty('display', displayMode, 'important');
             win.style.margin = '0';
             const title = win.querySelector(".tittle");
-            if(title) title.textContent = label;
+            if(title) title.textContent = labelP.textContent;
 
             const panel = win.querySelector(".window-pane");
             if(panel) panel.contentEditable = "true";
@@ -514,15 +581,48 @@ function createIcons(id, iconSrc, label) {
             bringWindowToTop(winId);
 
             if (displayMode === "flex") {
-                activeFolder = null;
+                setActiveFolder(null);
             } else {
-                activeFolder = winId;
+                setActiveFolder(null);
             }
         }
         console.log(activeWindows);
     });
 }
 
+function editIconNames(label, div){
+    label.contentEditable = "true";
+    label.focus();
+
+    document.execCommand("selectAll");
+
+    label.addEventListener("blur", () => {
+        label.contentEditable = "false";
+
+        const newName = label.textContent.trim();
+        if (!newName) return;
+
+        const oldIconId = div.id;
+        const oldFileId = oldIconId.replace("-icon", "");
+        const newFileId = newName + "-file";
+        const newIconId = newName + "-file-icon";
+
+        div.id = newIconId;
+
+        const file = files.find(file => file.id === oldFileId);
+        if(file) {
+            file.id = newFileId;
+            file.label = newName;
+        }
+
+        const win = document.getElementById(oldFileId);
+        if(win) {
+            win.id = newFileId;
+            const title = win.querySelector(".title");
+            if(title) title.textContent = newName;
+        }
+    })
+}
 //to close current specific window from nav bar
 document.getElementById("close-win").addEventListener("click", (e) =>{
     e.stopPropagation();
@@ -733,3 +833,17 @@ document.getElementById("by-kind").addEventListener("click", (e) => {
         return isFileA - isFileB;
     });
 });
+
+function setActiveFolder(id){
+    activeFolder = id;
+    const enabled = id === "open-folder" || id === "system-folder";
+    viewBtns.forEach(btn => {
+        btn.classList.toggle("disabled", !enabled);
+    })
+}
+
+const trashIcon = document.getElementById("trash-folder-icon");
+
+function trashFile(id){
+
+}

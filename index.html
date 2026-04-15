@@ -61,7 +61,7 @@
         </nav>
         <!-- homepage with icons -->
         <div class="home flex-1">
-            <div id="trash-icon" class="homeIcons">
+            <div id="trash-folder-icon" class="homeIcons">
                 <div class="imagecontent">
                     <img src="assets/icons/trash.svg" alt="trash" width="24" height="24" draggable="false">
                 </div>
@@ -91,6 +91,16 @@
             <div class="window-pane">
                 woo i got stuff in me!
             </div>
+        </div>
+        <div class="window fixed w-64 h-48 z-10" id="trash-folder" style="display: none !important;">
+            <div class="title-bar">
+                <button aria-label="Close" class="close"></button>
+                <h1 class="title">Trash</h1>
+                <button aria-label="Resize" class="resize"></button>
+            </div>
+            <div class="seperator"></div>
+
+            <div class="window-pane flex! " id="trash-list"></div>
         </div>
         <div class="window fixed w-128 h-48 z-10" id="open-folder" style="display: none !important;">
             <div class="title-bar">
