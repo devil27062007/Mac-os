@@ -82,9 +82,9 @@
         <!-- the modal for opening for the icons-->
         <div class="window w-64 h-48 z-10" id="system-folder" style="display: none !important;">
             <div class="title-bar">
-                <button aria-label="Close" class="close"></button>
+                <button aria-label="Close" class="close"> </button>
                 <h1 class="title">System</h1>
-                <button aria-label="Resize" class="resize"></button>
+                <button aria-label="Resize" class="resize" > </button>
             </div>
             <div class="separator"></div>
 
@@ -100,7 +100,8 @@
             </div>
             <div class="seperator"></div>
 
-            <div class="window-pane flex! " id="trash-list"></div>
+            <div class="window-pane flex! flex-row! flex-wrap gap-2 overflow-y-auto p-0! items-start content-start" id="trash-list">
+            </div>
         </div>
         <div class="window fixed w-128 h-48 z-10" id="open-folder" style="display: none !important;">
             <div class="title-bar">
@@ -146,8 +147,8 @@
                     <input id="file-create" type="text" class="flex-1" placeholder="">
                 </section>
                 <section class="field-row pt-5" style="justify-content: flex-end;">
-                    <button class="btn" id="cancel">Cancel</button>
-                    <button class="btn" id="create">Create</button>
+                    <button class="btn" id="cancel" >Cancel</button>
+                    <button class="btn" id="create" >Create</button>
                 </section>
             </div>
         </div>
