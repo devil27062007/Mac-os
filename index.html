@@ -41,16 +41,11 @@
                         <li role="menu-item"><button id="print">Print</button></li>
                     </ul>
                 </li>
-                <li role="menu-Item" tabindex="0" aria-haspopup="true">
-                    Edit
-                    <ul role="menu">
-                        <li role="menu-item"><a href="#menu">Action</a></li>
-                    </ul>
-                </li>
                 <li role="menu-item" tabindex="0" aria-haspopup="true">
                     View
                     <ul role="menu">
-                        <li role="menu-item"><a href="#menu">Action</a></li>
+                        <li role="menu-item"><button id="by-name">By name</button></li>
+                        <li role="menu-item"><button id="by-kind">By kind</button></li>
                     </ul>
                 </li>
                 <li role="meni-item" tabindex="0" aria-haspopup="true">
@@ -76,7 +71,7 @@
             </div>
             <div id="system-folder-icon" class="homeIcons">
                 <div>
-                    <img src="assets/icons/mac-system-icon.svg" draggable="false">
+                    <img src="assets/icons/mac-system-icon.svg" width="24" height="24" draggable="false">
                 </div>
                 <div>
                     <p id="label" class="text-sm! w-fit font-normal bg-white text-black">System</p>
@@ -106,7 +101,8 @@
             <div class="seperator"></div>
 
             <div class="window-pane flex flex-row">
-                <section class="flex flex-col gap-y-3 w-1/2 border-r-2 border-solid pr-2 border-black" style="justify-content: flex-start;">
+                <section class="flex flex-col gap-y-3 w-1/2 border-r-2 border-solid pr-2 border-black" 
+                style="justify-content: flex-start;">
                     <input id="open-input-field" aria-label="Example text box" type="text" placeholder="file name"/>
                     <button class="btn shrink-0 flex-grow-0 w-fit" id="open-open">Open</button>
                 </section>

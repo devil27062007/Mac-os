@@ -1,9 +1,9 @@
-.home {
+.home{
     position: relative;
     width: 100%;
 }
 
-.homeIcons {
+.homeIcons{
     width: 68px;
     height: 68px;
     display: flex;
@@ -15,9 +15,14 @@
     user-select: none;
 }
 
+.disabled{
+    opacity: 0.4 !important;
+    pointer-events: none !important;
+}
 
 
-body::before {
+
+body::before{
     content: "";
     position: fixed;
     inset: 0;
@@ -35,7 +40,7 @@ body::before {
 }
 
 
-body::after {
+body::after{
     content: "";
     position: fixed;
     inset: 0;
@@ -45,7 +50,7 @@ body::after {
     animation: crt-flicker 0.01s infinite;
 }
 
-@keyframes crt-flicker {
+@keyframes crt-flicker{
     0% {
         opacity: 0.1;
     }
