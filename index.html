@@ -13,7 +13,7 @@
 
 <body class="font-['Chicago'] text-black h-screen w-screen flex flex-col">
     <!-- animation made so whenj the page load it plays it -->
-    <div class="loading-animation w-full w-full">
+    <div class="loading-animation w-full h-full">
         <div class="mac-alone flex justify-center items-center w-full h-full">
             <img src="assets/icons/happy-mac-icon.svg" alt="Happy Mac" width="48" height="48">
         </div>
@@ -25,7 +25,7 @@
     <div class="after-loading w-full flex-1 flex flex-col" style="display: none !important;">
         <!-- navbar -->
         <nav 
-            class="bg-white w-screen h-10 px-5 flex justify-between items-center pl-5 pr-5 shadow-[0_2px_0_0_#000]">
+            class="bg-white w-full h-10 px-5 flex justify-between items-center pl-5 pr-5 shadow-[0_2px_0_0_#000]">
             <ul role="menu-bar" class="flex items-center gap-4 text-lg! h-fit">
                 <li>
                     <img src="assets/icons/apple-icon.svg" alt="Apple icon" width="16" height="16"
@@ -34,12 +34,12 @@
                 <li role="menu-item" tabindex="0" aria-haspopup="true">
                     File
                     <ul role="menu">
-                        <li role="menu-item"><button id="open">Open</button>
+                        <li role="menu-item"><button id="open">Open</button></li>
                         <li role="menu-item"><button id="new-file">New File</button></li>
                         <li role="menu-item"><button id="close-win">Close</button></li>
                         <li role="menu-item"><button id="close-all-win">Close All</button></li>
-                        <li role="menu-item"><button id="print">Print</button></li>
                         <li role="menu-item"><button id="delete">Delete Current</button></li>
+                        <li role="menu-item"><button id="print">Print</button></li>
                     </ul>
                 </li>
                 <li role="menu-item" tabindex="0" aria-haspopup="true">
@@ -49,7 +49,7 @@
                         <li role="menu-item"><button id="by-kind">By kind</button></li>
                     </ul>
                 </li>
-                <li role="meni-item" tabindex="0" aria-haspopup="true">
+                <li role="menu-item" tabindex="0" aria-haspopup="true">
                     Special
                     <ul role="menu">
                         <li role="menu-item"><a href="#menu">Devil007</a></li>
@@ -61,9 +61,9 @@
             </ul>
         </nav>
         <!-- homepage with icons -->
-        <div class="home flex-1">
+        <div class="home mb-1 flex-1">
             <div id="trash-folder-icon" class="homeIcons">
-                <div class="imagecontent">
+                <div class="">
                     <img src="assets/icons/trash.svg" alt="trash" width="24" height="24" draggable="false">
                 </div>
                 <div>
@@ -72,7 +72,7 @@
             </div>
             <div id="system-folder-icon" class="homeIcons">
                 <div>
-                    <img src="assets/icons/mac-system-icon.svg" width="24" height="24" draggable="false">
+                    <img src="assets/icons/mac-system-icon.svg" alt="system folder" width="24" height="24" draggable="false">
                 </div>
                 <div>
                     <p id="label" class="text-sm! w-fit font-normal bg-white text-black">System</p>
@@ -81,7 +81,7 @@
         </div>
 
         <!-- the modal for opening for the icons-->
-        <div class="window w-64 h-48 z-10" id="system-folder" style="display: none !important;">
+        <div class="window fixed h-48 z-10" id="system-folder" style="display: none !important;">
             <div class="title-bar">
                 <button aria-label="Close" class="close"> </button>
                 <h1 class="title">System</h1>
@@ -89,8 +89,8 @@
             </div>
             <div class="separator"></div>
 
-            <div class="window-pane">
-                woo i got stuff in me!
+            <div class="window-pane flex! flex-row! flex-wrap gap-2 overflow-y-auto p-1! items-start content-start"
+            id="system-list">
             </div>
         </div>
         <div class="window fixed w-64 h-48 z-10" id="trash-folder" style="display: none !important;">
@@ -99,7 +99,7 @@
                 <h1 class="title">Trash</h1>
                 <button aria-label="Resize" class="resize"></button>
             </div>
-            <div class="seperator"></div>
+            <div class="separator"></div>
 
             <div class="window-pane flex! flex-row! flex-wrap gap-2 overflow-y-auto p-0! items-start content-start" 
             id="trash-list">
@@ -111,7 +111,7 @@
                 <h1 class="title">Open</h1>
                 <button aria-label="Resize" class="resize"></button>
             </div>
-            <div class="seperator"></div>
+            <div class="separator"></div>
 
             <div class="window-pane flex flex-row">
                 <section class="flex flex-col gap-y-3 w-1/2 border-r-2 border-solid pr-2 border-black" 
@@ -119,18 +119,18 @@
                     <input id="open-input-field" aria-label="Example text box" type="text" placeholder="file name"/>
                     <button class="btn shrink-0 flex-grow-0 w-fit" id="open-open">Open</button>
                 </section>
-                <section class="flex flex-col gap-y-1 flex-1 overflow-y-auto idfile-list">
+                <section class="flex flex-col gap-y-1 flex-1 overflow-y-auto" id="file-list">
                 </section>
             </div>
         </div>
-        <div class="window fixed w-64 h-48 z-10 flex! flex-col! overflow-hidden!" id = "read-folder" 
+        <div class="window fixed w-64 h-48 z-10 flex! flex-col! overflow-hidden!" id = "read-file" 
         style="display: none !important;">
             <div class="title-bar">
                 <button aria-label="Close" class="close"></button>
                 <h1 class="title"></h1>
                 <button aria-label="Resize" class="resize" ></button>
             </div>
-            <div class="seperator"></div>
+            <div class="separator"></div>
             
             <div class="window-pane flex-1 overflow-y-auto! min-h-0">
             </div>
@@ -141,7 +141,7 @@
                 <h1 class="title">New File</h1>
                 <button aria-label="Resize" disabled class="hidden"></button>
             </div>
-            <div class="seperator"></div>
+            <div class="separator"></div>
 
             <div class="modeless-dialog">
                 <section class="field-row" style="justify-content: flex-start;">
@@ -173,7 +173,7 @@
             <div class="inner-border">
                 <div class="modal-contents">
                     <section class="field-row" style="justify-content: flex-start; gap: 10px;">
-                        <p class="modeless-text text-xl!" style="white-space: nowrap;">Quality</p>
+                        <p class="modeless-text text-xl!" style="white-space: nowrap;">Quality:</p>
                         <div class="field-row m-0!">
                             <input id="quality-standard" type="radio" name="print-quality" checked>
                             <label for="quality-standard">Standard</label>
