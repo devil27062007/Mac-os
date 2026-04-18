@@ -42,7 +42,7 @@ function init() {
 
         element.parentNode.insertBefore(beforeElement, element);
 
-        const fileId = element.id.replace("-icon","");
+        const fileId = element.id.replace("-icon", "");
         const label = element.querySelector("#label").textContent;
         const imgSrc = element.querySelector("img").src;
 
@@ -67,15 +67,15 @@ function init() {
 
     //for the fee of clicking the icons so color changes the points out that i clicked
     document.body.addEventListener('click', (e) => {
-        if(!e.target.closest('.homeIcons')){
-            document.querySelectorAll('.homeIcons').forEach((element) =>{
+        if (!e.target.closest('.homeIcons')) {
+            document.querySelectorAll('.homeIcons').forEach((element) => {
                 element.style.filter = '';
             })
         }
     });
 
 
-    document.querySelectorAll(".window").forEach(win=>{
+    document.querySelectorAll(".window").forEach(win => {
 
         win.style.visibility = "hidden";
         win.style.setProperty('display', 'block', 'important');
@@ -91,18 +91,18 @@ function init() {
     //to make click move the window top above all other window
     document.querySelectorAll(".window").forEach(win => {
         win.addEventListener("click", (e) => {
-            if(win.style.display!== 'none'){
+            if (win.style.display !== 'none') {
                 bringWindowToTop(win.id);
             }
         })
     })
 
     //to resize the window to either full or the default one
-    document.querySelectorAll(".resize").forEach(btn =>{
-        btn.addEventListener("click", (e) =>{
+    document.querySelectorAll(".resize").forEach(btn => {
+        btn.addEventListener("click", (e) => {
             const win = e.target.closest(".window");
 
-            if(win.dataset.full === "true"){
+            if (win.dataset.full === "true") {
                 win.style.width = win.dataset.width;
                 win.style.height = win.dataset.height;
                 win.style.top = win.dataset.top;
@@ -129,86 +129,86 @@ function init() {
         });
     });
 
-        // to make all close buttons works to close the wiondow
-        document.querySelectorAll(".close").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const win = e.target.closest(".window");
-                win.style.setProperty('display', 'none', 'important');
-                if(win.dataset.top) {
+    // to make all close buttons works to close the wiondow
+    document.querySelectorAll(".close").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const win = e.target.closest(".window");
+            win.style.setProperty('display', 'none', 'important');
+            if (win.dataset.top) {
                 win.style.top = win.dataset.top;
                 win.style.left = win.dataset.left;
                 win.style.width = win.dataset.width;
                 win.style.height = win.dataset.height;
-                }
+            }
+            activeWindows = activeWindows.filter(id => id !== win.id);
+            updateDeleteBtn();
+            updatePrintBtn();
+            if (activeFolder === win.id) setActiveFolder(null);
+        })
+    });
+
+    // to make cancel btn close the window
+    document.querySelectorAll("#cancel").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            let win = e.target.closest(".window");
+            if (win) {
+                win.style.setProperty('display', 'none', 'important');
                 activeWindows = activeWindows.filter(id => id !== win.id);
                 updateDeleteBtn();
                 updatePrintBtn();
-                if(activeFolder === win.id) setActiveFolder(null);
-            })
-        });
-
-        // to make cancel btn close the window
-        document.querySelectorAll("#cancel").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                let win = e.target.closest(".window");
-                if(win) {
-                    win.style.setProperty('display', 'none', 'important');
-                    activeWindows = activeWindows.filter( id => id !== win.id);
-                    updateDeleteBtn();
-                    updatePrintBtn();
-                    return;
-                }
-                win = e.target.closest(".alert-box");
-                if (win) {
-                    win.style.setProperty('display', 'none', 'important');
-                    activeWindows = activeWindows.filter( id => id !== win.id);
-                    updateDeleteBtn();
-                    updatePrintBtn();
-                    return;
-                }
-                win = e.target.closest(".modal-dialog");
-                if(win) {
-                    win.style.setProperty('display', 'none', 'important');
-                    activeWindows = activeWindows.filter(id => id !== win.id);
-                    printFile = null;
-                    updateDeleteBtn();
-                    updatePrintBtn();
-                }
-            })
+                return;
+            }
+            win = e.target.closest(".alert-box");
+            if (win) {
+                win.style.setProperty('display', 'none', 'important');
+                activeWindows = activeWindows.filter(id => id !== win.id);
+                updateDeleteBtn();
+                updatePrintBtn();
+                return;
+            }
+            win = e.target.closest(".modal-dialog");
+            if (win) {
+                win.style.setProperty('display', 'none', 'important');
+                activeWindows = activeWindows.filter(id => id !== win.id);
+                printFile = null;
+                updateDeleteBtn();
+                updatePrintBtn();
+            }
         })
+    })
 
-        //to make submit button works when click
-        document.querySelector('#create').addEventListener("click", (e) => {
-            const input = document.getElementById("file-create");
-            let value = input.value.trim();
+    //to make submit button works when click
+    document.querySelector('#create').addEventListener("click", (e) => {
+        const input = document.getElementById("file-create");
+        let value = input.value.trim();
 
-            if(value.trim() ==="") {
-                alertBox("Sorry Enter Some 'File Name' to create a file")
-                input.value = "";
-                return;
-            }
-
-            const fileExistingCheck = files.find(file => file.id === `${value}-file`);
-            if(fileExistingCheck) {
-                alertBox("File Already Exists.");
-                input.value = "";
-                return;
-            }
-
+        if (value.trim() === "") {
+            alertBox("Sorry Enter Some 'File Name' to create a file")
             input.value = "";
-            createIcons(`${value}-file-icon`, "assets/icons/hypercard.svg", value);
-            createWindow(`${value}-file`, value, "true");
-        });
+            return;
+        }
 
-        //ok button to work for alert button
-        document.querySelector("#alert-okay").addEventListener('click', (e) =>{
-            const alertBox = document.querySelector(".alert-box");
-            alertBox.style.setProperty('display', 'none', 'important');
-        })
+        const fileExistingCheck = files.find(file => file.id === `${value}-file`);
+        if (fileExistingCheck) {
+            alertBox("File Already Exists.");
+            input.value = "";
+            return;
+        }
+
+        input.value = "";
+        createIcons(`${value}-file-icon`, "assets/icons/hypercard.svg", value);
+        createWindow(`${value}-file`, value, "true");
+    });
+
+    //ok button to work for alert button
+    document.querySelector("#alert-okay").addEventListener('click', (e) => {
+        const alertBox = document.querySelector(".alert-box");
+        alertBox.style.setProperty('display', 'none', 'important');
+    })
 
     //double clicking the window will open window fixed pos but can drag around
-    document.querySelectorAll(".homeIcons").forEach(btn =>{
-        btn.addEventListener("dblclick", (e) =>{
+    document.querySelectorAll(".homeIcons").forEach(btn => {
+        btn.addEventListener("dblclick", (e) => {
             e.stopPropagation();
             const windowId = btn.id.replace("-icon", "");
 
@@ -245,8 +245,8 @@ function dragElementWindow(element) {
 
     function startDragging(e) {
         //e = e || window.event;
-        if(e.target.closest('button')) return;
-        if(e.target.closest('input')) return;
+        if (e.target.closest('button')) return;
+        if (e.target.closest('input')) return;
         if (e.target.closest(".window-pane")) return;
 
         e.preventDefault();
@@ -294,7 +294,7 @@ function dragElementWindow(element) {
         element.style.top = (newY) + 'px';
         element.style.left = (newX) + 'px';
 
-        if(element.dataset.dragging === ''){
+        if (element.dataset.dragging === '') {
             element.style.margin = '0';
 
             const rect = element.getBoundingClientRect();
@@ -313,7 +313,7 @@ function dragElementWindow(element) {
 };
 
 
-function dragElement(element){
+function dragElement(element) {
 
     var initialX = 0;
     var initialY = 0;
@@ -324,7 +324,7 @@ function dragElement(element){
     //console.log(element);
 
     //define startDragging function to capture the initial mouse position and set up event listeners
-    function startDragging(e){
+    function startDragging(e) {
 
         // if(e.target.closest(""))
         e.preventDefault();
@@ -342,7 +342,7 @@ function dragElement(element){
     element.onmousedown = startDragging;
 
 
-    function dragging(e){
+    function dragging(e) {
         e = e || window.event;
         e.preventDefault();
 
@@ -351,7 +351,7 @@ function dragElement(element){
 
         console.log("parentRect: ", parentRect);
         console.log("childRect: ", childRect);
-        console.log("Y range: ", parentRect.top , '->', parentRect.bottom - childRect.height);
+        console.log("Y range: ", parentRect.top, '->', parentRect.bottom - childRect.height);
 
 
         currentX = initialX - e.clientX;
@@ -374,7 +374,7 @@ function dragElement(element){
     }
 
 
-    function stopDragging(){
+    function stopDragging() {
         element.style.filter = '';
         document.onmouseup = null;
         document.onmousemove = null;
@@ -389,7 +389,7 @@ function dragElement(element){
             elementRect.bottom > trashRect.top
         );
 
-        if(overLap && element.id !== "trash-folder-icon" && element.id !== "system-folder-icon") {
+        if (overLap && element.id !== "trash-folder-icon" && element.id !== "system-folder-icon") {
             trashFile(element.id);
             document.getElementById("trash-folder").style.setProperty('display', 'none', 'important');
             return;
@@ -401,7 +401,7 @@ function dragElement(element){
         }
 
         document.querySelectorAll(".homeIcons").forEach(icon => {
-            if(icon === element) return;
+            if (icon === element) return;
 
             const iconRect = icon.getBoundingClientRect();
 
@@ -412,7 +412,7 @@ function dragElement(element){
                 elementRect.bottom > iconRect.top
             );
 
-            if(overLap) {
+            if (overLap) {
                 element.style.left = originalLeft;
                 element.style.top = originalTop;
             }
@@ -449,7 +449,7 @@ function fadeOut(element, duration = 500, onDone) {
     element.style.transition = `opacity ${duration}ms ease`;
     element.style.opacity = '0';
     element.addEventListener('transitionend', () => {
-        if (onDone){
+        if (onDone) {
             onDone();
         }
     }, { once: true });
@@ -500,14 +500,14 @@ document.getElementById("open").addEventListener('click', (e) => {
         `
         item.addEventListener("dblclick", (e) => {
             const win = document.getElementById(file.id);
-            if(win) {
+            if (win) {
                 win.style.setProperty("display", "block", "important");
                 const id = activeWindows.indexOf(file.id);
-                if(id === -1) activeWindows.push(file.id);
+                if (id === -1) activeWindows.push(file.id);
                 updateDeleteBtn();
                 updatePrintBtn();
                 bringWindowToTop(file.id);
-                if (file.id.includes("-file")){
+                if (file.id.includes("-file")) {
                     setActiveFolder(null);
                 } else {
                     setActiveFolder(file.id);
@@ -549,7 +549,7 @@ function createIcons(id, iconSrc, label) {
 
     const labelP = div.querySelector("p");
 
-    labelP.addEventListener("dblclick", (e)=> {
+    labelP.addEventListener("dblclick", (e) => {
         e.stopPropagation();
         editIconNames(labelP, div);
     })
@@ -564,7 +564,7 @@ function createIcons(id, iconSrc, label) {
 
     row++;
 
-    if(row >= iconsPerCol) {
+    if (row >= iconsPerCol) {
         row = 0;
         col++;
     }
@@ -579,22 +579,22 @@ function createIcons(id, iconSrc, label) {
 
     div.addEventListener('dblclick', (e) => {
         e.stopPropagation();
-        const winId = div.id.replace("-icon","");
+        const winId = div.id.replace("-icon", "");
         const win = document.getElementById(winId);
-        if(win) {
+        if (win) {
             const displayMode = win.id.includes('-file') ? 'flex' : 'block';
             console.log(displayMode);
             win.style.setProperty('display', displayMode, 'important');
             win.style.margin = '0';
             const title = win.querySelector(".title");
-            if(title) title.textContent = labelP.textContent;
+            if (title) title.textContent = labelP.textContent;
 
             const panel = win.querySelector(".window-pane");
-            if(panel) panel.contentEditable = "true";
+            if (panel) panel.contentEditable = "true";
             panel.focus();
 
             const idThere = activeWindows.indexOf(winId);
-            if(idThere === -1) activeWindows.push(winId);
+            if (idThere === -1) activeWindows.push(winId);
             updateDeleteBtn();
             updatePrintBtn();
             bringWindowToTop(winId);
@@ -609,7 +609,7 @@ function createIcons(id, iconSrc, label) {
     });
 }
 
-function editIconNames(label, div){
+function editIconNames(label, div) {
     label.contentEditable = "true";
     label.focus();
 
@@ -629,27 +629,27 @@ function editIconNames(label, div){
         div.id = newIconId;
 
         const file = files.find(file => file.id === oldFileId);
-        if(file) {
+        if (file) {
             file.id = newFileId;
             file.label = newName;
         }
 
         const win = document.getElementById(oldFileId);
-        if(win) {
+        if (win) {
             win.id = newFileId;
             const title = win.querySelector(".title");
-            if(title) title.textContent = newName;
+            if (title) title.textContent = newName;
         }
 
         const index = activeWindows.indexOf(oldFileId);
-        if(index !== -1) {
+        if (index !== -1) {
             activeWindows[index] = newFileId;
         }
         updateDeleteBtn();
         updatePrintBtn();
-    }, { once : true})
+    }, { once: true })
     label.addEventListener("keydown", (e) => {
-        if( e.key.toLowerCase() === "enter") {
+        if (e.key.toLowerCase() === "enter") {
             e.preventDefault();
             label.blur();
         }
@@ -657,13 +657,13 @@ function editIconNames(label, div){
 }
 
 //to close current specific window from nav bar
-document.getElementById("close-win").addEventListener("click", (e) =>{
+document.getElementById("close-win").addEventListener("click", (e) => {
     e.stopPropagation();
     const lastWinId = activeWindows.pop();
     if (lastWinId) {
         const lastWinDiv = document.getElementById(lastWinId);
         lastWinDiv.style.setProperty('display', 'none', 'important');
-        if (activeFolder === lastWinId) setActiveFolder(null); 
+        if (activeFolder === lastWinId) setActiveFolder(null);
     }
     updateDeleteBtn();
     updatePrintBtn();
@@ -673,9 +673,9 @@ document.getElementById("close-win").addEventListener("click", (e) =>{
 //close all windows from the nav bar
 document.getElementById("close-all-win").addEventListener("click", (e) => {
     e.stopPropagation();
-    for(let i = 0; i<activeWindows.length; i++){
+    for (let i = 0; i < activeWindows.length; i++) {
         const win = document.getElementById(activeWindows[i]);
-        if(win) win.style.setProperty('display','none','important');
+        if (win) win.style.setProperty('display', 'none', 'important');
     }
     activeWindows = [];
     updateDeleteBtn();
@@ -684,16 +684,16 @@ document.getElementById("close-all-win").addEventListener("click", (e) => {
     document.activeElement.blur();
 });
 
-function bringWindowToTop(winId){
-    if(!winId) return;
-    activeWindows = activeWindows.filter(id => id!== winId);
+function bringWindowToTop(winId) {
+    if (!winId) return;
+    activeWindows = activeWindows.filter(id => id !== winId);
     activeWindows.push(winId);
-    activeWindows.forEach((id,index) => {
+    activeWindows.forEach((id, index) => {
         const win = document.getElementById(id);
-        if(win) win.style.zIndex = (100 + index).toString();
+        if (win) win.style.zIndex = (100 + index).toString();
     });
 
-    if(winId.includes("-file")) {
+    if (winId.includes("-file")) {
         setActiveFolder(null);
     } else {
         setActiveFolder(winId);
@@ -789,7 +789,7 @@ function createWindow(id, name, editable = 'false') {
         updatePrintBtn();
     });
 
-    resizeBtn.addEventListener("click", (e) =>{
+    resizeBtn.addEventListener("click", (e) => {
         const win = e.target.closest(".window");
         if (win.dataset.full === "true") {
             win.style.width = win.dataset.width;
@@ -818,7 +818,7 @@ function createWindow(id, name, editable = 'false') {
     })
 
     div.addEventListener("click", () => {
-        if(div.style.display !== "none") bringWindowToTop(id);
+        if (div.style.display !== "none") bringWindowToTop(id);
     })
 
     div.style.visibility = "hidden";
@@ -840,7 +840,7 @@ function sortIcons(sortFn) {
     if (activeFolder === "open-folder") {
         fileList = document.getElementById("file-list");
         sorted = [...files].sort(sortFn);
-    } else if(activeFolder === "trash-folder") {
+    } else if (activeFolder === "trash-folder") {
         fileList = document.getElementById("trash-list");
         sorted = [...trashedFiles].sort(sortFn);
         return;
@@ -858,7 +858,7 @@ function sortIcons(sortFn) {
             if (win) {
                 win.style.setProperty("display", "block", "important");
                 const id = activeWindows.indexOf(file.id);
-                if(id === -1) activeWindows.push(file.id);
+                if (id === -1) activeWindows.push(file.id);
                 updateDeleteBtn();
                 updatePrintBtn();
                 bringWindowToTop(file.id);
@@ -874,14 +874,14 @@ document.getElementById("by-name").addEventListener("click", (e) => {
 
 document.getElementById("by-kind").addEventListener("click", (e) => {
     sortIcons((a, b) => {
-        const isFileA = a.id.includes("-file") ? 1: 0;
-        const isFileB = b.id.includes("-file") ? 1: 0;
+        const isFileA = a.id.includes("-file") ? 1 : 0;
+        const isFileB = b.id.includes("-file") ? 1 : 0;
 
         return isFileA - isFileB;
     });
 });
 
-function setActiveFolder(id){
+function setActiveFolder(id) {
     activeFolder = id;
     const enabled = id === "open-folder" || id === "system-folder" || id === "trash-folder";
     viewBtns.forEach(btn => {
@@ -891,39 +891,39 @@ function setActiveFolder(id){
 
 const trashIcon = document.getElementById("trash-folder-icon");
 
-function trashFile(id){
+function trashFile(id) {
     const icon = document.getElementById(id);
-    if(!icon) return;
+    if (!icon) return;
 
-    const fileId = id.replace("-icon","");
+    const fileId = id.replace("-icon", "");
     const file = files.find(file => file.id === fileId);
-    if(!file) return;
+    if (!file) return;
 
-    trashedFiles.push({...file, id });
+    trashedFiles.push({ ...file, id });
     files = files.filter(file => file.id !== fileId);
 
     const win = document.getElementById(fileId);
 
-    if(win) {
-        win.style.setProperty('display', 'none','important');
+    if (win) {
+        win.style.setProperty('display', 'none', 'important');
         activeWindows = activeWindows.filter(window => window !== fileId);
         updateDeleteBtn();
         updatePrintBtn();
     }
     icon.remove();
 
-    if( trashedFiles.length > 0) {
-        document.querySelector("#trash-folder-icon img").src="assets/icons/trash-full.svg";
+    if (trashedFiles.length > 0) {
+        document.querySelector("#trash-folder-icon img").src = "assets/icons/trash-full.svg";
     }
 }
 
 function restoreFile(id) {
     const file = trashedFiles.find(file => file.id === id);
-    if(!file) return;
+    if (!file) return;
 
     trashedFiles = trashedFiles.filter(file => file.id !== id);
     createIcons(id, file.iconSrc, file.label);
-    if(trashedFiles.length === 0){
+    if (trashedFiles.length === 0) {
         document.querySelector("#trash-folder-icon img").src = "assets/icons/trash.svg";
     }
 }
@@ -953,11 +953,11 @@ document.getElementById("trash-folder-icon").addEventListener("dblclick", (e) =>
 
 document.getElementById("delete").addEventListener("click", () => {
 
-    const deletingWinId = activeWindows[activeWindows.length-1];
+    const deletingWinId = activeWindows[activeWindows.length - 1];
 
-    if(!deletingWinId) return;
+    if (!deletingWinId) return;
 
-    if(deletingWinId.includes("-file")) {
+    if (deletingWinId.includes("-file")) {
         trashFile(deletingWinId + '-icon');
     } else {
         alertBox("You Cant Delete System Folder/Alert");
@@ -977,9 +977,9 @@ let printFile = null;
 document.getElementById("print").addEventListener("click", (e) => {
 
     const topWin = activeWindows[activeWindows.length - 1];
-    if(!topWin) return;
+    if (!topWin) return;
 
-    if(topWin.includes("-folder")) {
+    if (topWin.includes("-folder")) {
         alertBox("you can only print Files.");
         return;
     }
@@ -995,14 +995,14 @@ document.getElementById("print").addEventListener("click", (e) => {
     document.activeElement.blur();
 })
 
-function updatePrintBtn(){
+function updatePrintBtn() {
     const topWin = activeWindows[activeWindows.length - 1];
     document.getElementById("print").classList.toggle("disabled", !topWin);
 }
 updatePrintBtn();
 
 document.getElementById("print-confirm").addEventListener("click", (e) => {
-    if(!printFile) return;
+    if (!printFile) return;
 
     const quality = document.getElementById("quality-high").checked ? "high" : "standard";
     const copies = parseInt(document.getElementById("copies").value) || 1;
@@ -1048,9 +1048,9 @@ document.getElementById("system-folder-icon").addEventListener("dblclick", (e) =
     fileList.innerHTML = "";
 
     files.forEach(file => {
-        if(file.id === "system-folder") return;
+        if (file.id === "system-folder") return;
         console.log(file.id);
-        const item =  document.createElement("div");
+        const item = document.createElement("div");
         item.className = "flex items-center gap-2 cursor-pointer px-1";
         item.innerHTML = `
         <img src = "${file.iconSrc}" width ="16" height ="16" />
@@ -1061,7 +1061,7 @@ document.getElementById("system-folder-icon").addEventListener("dblclick", (e) =
 
             const win = document.getElementById(file.id);
 
-            if(win) {
+            if (win) {
                 const displayMode = file.id.includes("-file") ? "flex" : "block";
                 win.style.setProperty("display", displayMode, "important");
                 const index = activeWindows.indexOf(file.id);
@@ -1076,7 +1076,7 @@ document.getElementById("system-folder-icon").addEventListener("dblclick", (e) =
 
 })
 
-const tabs = ["about", "projects", "skill", "contact"];
+const tabs = ["about", "projects", "skills", "contact"];
 
 const displayModalForTabs = {
     "about": "flex",
@@ -1089,18 +1089,45 @@ let sectionWidth = null;
 let sectionHeight = null;
 
 tabs.forEach(tab => {
-    document.getElementById(`tab-${tab}`).addEventListener("click", (e) => {
+    const tabButton = document.getElementById(`tab-${tab}`);
+    if (!tabButton) return;
+
+    tabButton.addEventListener("click", (e) => {
         const aboutMeSec = document.getElementById("about-me-section");
+        if (!aboutMeSec) return;
+
         if (!sectionWidth) {
             sectionWidth = aboutMeSec.offsetWidth;
             sectionHeight = aboutMeSec.offsetHeight;
         }
         tabs.forEach(t => {
-            document.getElementById(`content-${t}.style.display = "none";`);
+            const content = document.getElementById(`content-${t}`);
+            if (content) content.style.display = "none";
         });
-        document.getElementById(`content-${tab}`).style.display = displayModalForTabs[tab];
+        const currentContent = document.getElementById(`content-${tab}`);
+        if (currentContent) {
+            currentContent.style.display = displayModalForTabs[tab] || "block";
+        }
         aboutMeSec.style.width = sectionWidth + 'px';
         aboutMeSec.style.height = sectionHeight + 'px';
     })
 })
 
+//myself section
+document.getElementById("about-me").addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    const aboutMeSec = document.getElementById("about-me-section");
+    if (!aboutMeSec) return;
+
+    aboutMeSec.style.setProperty('display', 'block', 'important');
+    sectionWidth = aboutMeSec.offsetWidth;
+    sectionHeight = aboutMeSec.offsetHeight;
+    activeWindows.push("about-me-section");
+    bringWindowToTop("about-me-section");
+
+    updateDeleteBtn();
+    updatePrintBtn();
+
+    document.activeElement.blur();
+})

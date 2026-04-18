@@ -25,7 +25,7 @@
     <div class="after-loading w-full flex-1 flex flex-col" style="display: none !important;">
         <!-- navbar -->
         <nav 
-            class="bg-white w-full h-10 px-5 flex justify-between items-center pl-5 pr-5 shadow-[0_2px_0_0_#000]">
+            class="bg-white w-full h-10 shrink-0 px-5 flex justify-between items-center pl-5 pr-5 shadow-[0_2px_0_0_#000]">
             <ul role="menu-bar" class="flex items-center gap-4 text-lg! h-fit">
                 <li>
                     <img src="assets/icons/apple-icon.svg" alt="Apple icon" width="16" height="16"
@@ -116,7 +116,7 @@
                     <li role="menu-item"><button id="tab-about" class="text-lg!">About Me</button></li>
                     <li role="menu-item"><button id="tab-projects" class="text-lg!">Projects</button></li>
                     <li role="menu-item"><button id="tab-skills" class="text-lg!">Skills</button></li>
-                    <li role="menu-item"><button id="tab-contact" class="text-lg!">Conatact</button></li>
+                    <li role="menu-item"><button id="tab-contact" class="text-lg!">Contact</button></li>
                 </ul>
             </div>
             <div class="window-pane overflow-y-auto p-5!">
@@ -151,7 +151,26 @@
                 </div>
             </div>
         </div>
-        
+
+        <div id="content-skills" style="display: none;">
+            <p class="text-sm! font-bold mb-1">Skills</p>
+            <div class="flex flex-col gap-1 text-sm!">
+                <span>&nbsp;&nbsp;◦ HTML5 Canvas / CSS </span>
+                <span>&nbsp;&nbsp;◦ Java Script </span>
+                <span>&nbsp;&nbsp;◦ Python , C++ , Java</span>
+            </div>
+        </div>
+
+        <div id="content-contact" style="display: none;">
+            <p class="text-sm! font-bold mb-1">Contact</p>
+            <div class="flex flex-col gap-1 text-sm!">
+                <span>&nbsp;&nbsp;GitHub:<a href="https://github.com/devil27062007" target="_blank">Devil27062007</a></span>
+                <span>&nbsp;&nbsp;Email:<a href="mailto:devil27062007@gmail.com"></a></span>
+            </div>
+        </div>
+        </div>
+    </div>
+        </body>
         <div class="window fixed w-128 h-48 z-10" id="open-folder" style="display: none !important;">
             <div class="title-bar">
                 <button aria-label="Close" class="close"></button>
