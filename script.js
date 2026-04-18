@@ -1000,3 +1000,43 @@ function updatePrintBtn(){
     document.getElementById("print").classList.toggle("disabled", !topWin);
 }
 updatePrintBtn();
+
+document.getElementById("print-confirm").addEventListener("click", (e) => {
+    if(!printFile) return;
+
+    const quality = document.getElementById("quality-high").checked ? "high" : "standard";
+    const copies = parseInt(document.getElementById("copies").value) || 1;
+
+    const win = document.getElementById(printFile);
+
+    const content = win?.querySelector(".window-pane")?.innerHTML;
+    const title = win?.querySelector(".title")?.textContent;
+
+    for (let i = 0; i < copies; i++) {
+        const printWin = window.open("", "_blank");
+        if(!printWin) {
+            alertBox("Popup blocked, Please Allow Popups For This Site");
+            document.getElementById("print-modal").style.setProperty('display', 'none', 'important');
+            return;
+        }
+        printWin.document.write(
+            `
+            <html>
+                <head>
+                    <style>
+                    body { font-family: Chicago,monospace;}
+                    ${quality === "high" ? "*{-webkit-print-color-adjust: exact;" : ""}
+                    </style>
+                    </head>
+                    <body>
+                    <h2>${title}</h2>
+                    ${content}
+                    </body>
+                    </body>`
+        );
+        printWin.document.close();
+        printWin.print();
+        printWin.close();
+    }
+    document.getElementById("print-modal").style.setProperty('display', 'none', 'important');
+})
