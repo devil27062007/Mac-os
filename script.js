@@ -1075,3 +1075,32 @@ document.getElementById("system-folder-icon").addEventListener("dblclick", (e) =
     })
 
 })
+
+const tabs = ["about", "projects", "skill", "contact"];
+
+const displayModalForTabs = {
+    "about": "flex",
+    "projects": "block",
+    "skills": "block",
+    "contact": "block"
+};
+
+let sectionWidth = null;
+let sectionHeight = null;
+
+tabs.forEach(tab => {
+    document.getElementById(`tab-${tab}`).addEventListener("click", (e) => {
+        const aboutMeSec = document.getElementById("about-me-section");
+        if (!sectionWidth) {
+            sectionWidth = aboutMeSec.offsetWidth;
+            sectionHeight = aboutMeSec.offsetHeight;
+        }
+        tabs.forEach(t => {
+            document.getElementById(`content-${t}.style.display = "none";`);
+        });
+        document.getElementById(`content-${tab}`).style.display = displayModalForTabs[tab];
+        aboutMeSec.style.width = sectionWidth + 'px';
+        aboutMeSec.style.height = sectionHeight + 'px';
+    })
+})
+

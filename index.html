@@ -52,7 +52,7 @@
                 <li role="menu-item" tabindex="0" aria-haspopup="true">
                     Special
                     <ul role="menu">
-                        <li role="menu-item"><a href="#menu">Devil007</a></li>
+                        <li role="menu-item"><button id="about-me"><a href="#menu">Devil007</a></button></li>
                     </ul>
                 </li>
             </ul>
@@ -105,6 +105,53 @@
             id="trash-list">
             </div>
         </div>
+
+        <div class="window fixed z-9999 w-fit h-fit" id="about-me-section" style="display: block !important;">
+            <div class="title-bar">
+                <button aria-label="Close" class="close"></button>
+                <h1 class="title">Devil007</h1>
+            </div>
+            <div class="details-bar">
+                <ul role="menu-bar">
+                    <li role="menu-item"><button id="tab-about" class="text-lg!">About Me</button></li>
+                    <li role="menu-item"><button id="tab-projects" class="text-lg!">Projects</button></li>
+                    <li role="menu-item"><button id="tab-skills" class="text-lg!">Skills</button></li>
+                    <li role="menu-item"><button id="tab-contact" class="text-lg!">Conatact</button></li>
+                </ul>
+            </div>
+            <div class="window-pane overflow-y-auto p-5!">
+
+                <div id="content-about" class="flex flex-row gap-4">
+                    <img src="assets/kitty-meme.jpg" width="86" height="86"/>
+                </div>
+                <p class="text-lg! font-bold">Devil007</p>
+                <p class="text-sm!">11th grade @ The indian Public School</p>
+                <p class="text-sm! mt-2">Buiding Web Apps, Mobile App developer <br>
+                    Building games with JS Canvas</p>
+            </div>
+        </div>
+
+        <div id="content-projects" style="display: none;">
+            <p class="text-sm! font-bold mb-1">Projects</p>
+            <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-2">
+                    &nbsp;
+                    <img src="assets/icons/hypercard.svg" width="16" height="16">
+                    <span class="text-sm!"><a href="https://devil27062007.github.io/King-s-Labyrinth/" target="_blank">King's Labyrinth</a></span>
+                </div>
+                <div class="items-center gap-2">
+                    &nbsp;
+                    <img src="assets/icons/hypercard.svg" width="16" height="16"/>
+                    <span class="text-sm!"><a href="https://devil27062007.github.io/PokemonGame/">Pokemon Game</a></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    &nbsp;
+                    <img src="assets/icons/hypercard.svg" width="16" height="16">
+                    <span class="text-sm!"><a href="https://devil27062007.github.io/Endless-Rider">Endless Rider</a></span>
+                </div>
+            </div>
+        </div>
+        
         <div class="window fixed w-128 h-48 z-10" id="open-folder" style="display: none !important;">
             <div class="title-bar">
                 <button aria-label="Close" class="close"></button>
