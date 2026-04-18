@@ -3,6 +3,8 @@ const iconSize = 68;
 
 let iconsPerCol;
 
+const scale = 2;
+
 let row = 0;
 let col = 0;
 
@@ -18,13 +20,20 @@ setActiveFolder(null);
 let trashedFiles = [];
 
 function init() {
-    homeRect = document.querySelector(".home").getBoundingClientRect();
+    const homeEl = document.querySelector(".home");
+    //Use offset properties to get the logical dimensions
+    homeRect = {
+        width: homeEl.offsetWidth,
+        height: homeEl.offsetHeight,
+        top: homeEl.offsetTop,
+        left: homeEl.offsetLeft
+    };
+
     iconsPerCol = Math.floor(homeRect.height / iconSize);
 
     //for arranged so it will arrange in grid fills col first
     document.querySelectorAll('.homeIcons').forEach((element) => {
 
-        const rect = element.getBoundingClientRect();
         element.style.position = 'absolute';
         element.style.left = (col * iconSize) + 'px';
         element.style.top = (row * iconSize) + 'px';
@@ -36,8 +45,8 @@ function init() {
         }
 
         const beforeElement = document.createElement('div');
-        beforeElement.style.width = rect.width + 'px';
-        beforeElement.style.height = rect.height + 'px';
+        beforeElement.style.width = element.offsetWidth + 'px';
+        beforeElement.style.height = element.offsetHeight + 'px';
         beforeElement.style.visibility = 'hidden';
 
         element.parentNode.insertBefore(beforeElement, element);
@@ -76,12 +85,11 @@ function init() {
 
 
     document.querySelectorAll(".window").forEach(win => {
-
         win.style.visibility = "hidden";
         win.style.setProperty('display', 'block', 'important');
 
-        win.style.top = (window.innerHeight / 2) - (win.offsetHeight / 2) + 'px';
-        win.style.left = (window.innerWidth / 2) - (win.offsetWidth / 2) + 'px';
+        win.style.top = (window.innerHeight / scale/ 2) - (win.offsetHeight / 2) + 'px';
+        win.style.left = (window.innerWidth / scale/ 2) - (win.offsetWidth / 2) + 'px';
 
         win.style.visibility = "";
         win.style.setProperty('display', 'none', 'important');
@@ -109,7 +117,6 @@ function init() {
                 win.style.left = win.dataset.left;
 
                 win.dataset.full = "false";
-
                 win.style.margin = '0';
             } else {
                 win.dataset.width = win.style.width;
@@ -123,7 +130,6 @@ function init() {
                 win.style.left = homeRect.left + 'px';
 
                 win.dataset.full = "true";
-
                 win.style.margin = '0';
             }
         });
@@ -232,36 +238,55 @@ function init() {
             console.log(activeWindows);
         })
     });
+
+    createIcons("demo-file-icon","assets/icons/hypercard.svg","demo");
+    createWindow("demo-file","demo","false");
+
+    const demoPane = document.getElementById("demo-file").querySelector(".window-pane");
+    demoPane.innerHTML = `
+    <p><strong>Welcome to Mac OS</strong></p>
+    <br>
+    <p>◦ Double-click an icon to open it </p>
+    <p>◦ Drag icons to move them around</p>
+    <p>◦ Drag an icon onto Trashto delete it</p>
+    <p>◦ Double click trash to restore files</p>
+    <p>◦ Double click an icon label to rename it </p>
+    <p>◦ Use File -> New File to create a new file</p>
+    <p>◦ Use File -> Open to open a file by name</p>
+    <p>◦ Use View -> By Name / By Kind to sort</p>
+    <p>◦ Use File -> Print to print the active file</p>
+    <p>◦nUse File -> Delete to trash the active file</p>
+    <p>◦ Dont drag the system folder to Trash...
+    `;
+
+    const demoWin = document.getElementById("demo-file");
+    demoWin.style.setProperty("display", "flex", "file");
+    const demoIdx = activeWindows.indexOf("demo-file");
+    if(demoIdx === -1) activeWindows.push("demo-file");
+    bringWindowToTop("demo-file");
 }
 
 function dragElementWindow(element) {
-
     var initialX = 0;
     var initialY = 0;
     var currentX = 0;
     var currentY = 0;
-    //console.log(element);
-
 
     function startDragging(e) {
-        //e = e || window.event;
         if (e.target.closest('button')) return;
         if (e.target.closest('input')) return;
         if (e.target.closest(".window-pane")) return;
 
         e.preventDefault();
-        // get the mouse cursor position at startup
 
-        const rect = element.getBoundingClientRect();
-        element.style.top = rect.top + 'px';
-        element.style.left = rect.left + 'px';
+        //Use unscaled offset properties to prevent jumps
+        element.style.top = element.offsetTop + 'px';
+        element.style.left = element.offsetLeft + 'px';
         element.style.margin = '0';
 
         initialX = e.clientX;
         initialY = e.clientY;
 
-        element.style.margin = '0';
-        //set up event listeners for mouse movement and mouse button release
         bringWindowToTop(element.id);
 
         document.onmouseup = stopDragging;
@@ -269,41 +294,29 @@ function dragElementWindow(element) {
     };
     element.onmousedown = startDragging;
 
-    //calculating dragging position
     function dragging(e) {
         e = e || window.event;
         e.preventDefault();
 
-        const childRect = element.getBoundingClientRect();
-
-
-        currentX = initialX - e.clientX;
-        currentY = initialY - e.clientY;
+        //Divide cursor calculations by "scale"
+        currentX = (initialX - e.clientX)/ scale;
+        currentY = (initialY - e.clientY)/ scale;
 
         initialX = e.clientX;
         initialY = e.clientY;
 
-        let newX = parseFloat(element.style.left) - currentX;
-        let newY = parseFloat(element.style.top) - currentY;
+        let newX = parseFloat(element.style.left || 0) - currentX;
+        let newY = parseFloat(element.style.top || 0) - currentY;
 
-        newX = Math.max(0, Math.min(newX, window.innerWidth - childRect.width));
-        newY = Math.max(homeRect.top, Math.min(newY, window.innerHeight - childRect.height));
+        //Constraint rules inside unscaled viewport bounds
+        const navHeight = document.querySelector('nav') ? document.querySelector('nav').offsetHeight : 0 ;
+        newX = Math.max(0, Math.min(newX, (window.innerWidth/ scale)-element.offsetWidth));
+        newY = Math.max(navHeight, Math.min(newY, (window.innerHeight/scale) - element.offsetHeight));
 
-        // update the elements new position
         element.style.position = 'absolute';
         element.style.top = (newY) + 'px';
         element.style.left = (newX) + 'px';
-
-        if (element.dataset.dragging === '') {
-            element.style.margin = '0';
-
-            const rect = element.getBoundingClientRect();
-            element.style.left = rect.left + 'px';
-            element.style.top = rect.top + 'px';
-            element.dataset.dragging = 'true';
-        }
     };
-
 
     function stopDragging() {
         element.style.filter = '';
@@ -312,23 +325,16 @@ function dragElementWindow(element) {
     };
 };
 
-
 function dragElement(element) {
-
     var initialX = 0;
     var initialY = 0;
     var currentX = 0;
     var currentY = 0;
     var originalLeft = 0;
     var originalTop = 0;
-    //console.log(element);
 
-    //define startDragging function to capture the initial mouse position and set up event listeners
     function startDragging(e) {
-
-        // if(e.target.closest(""))
         e.preventDefault();
-        // Get the mouse cursor positionat startup
 
         originalLeft = element.style.left;
         originalTop = element.style.top;
@@ -341,31 +347,25 @@ function dragElement(element) {
     }
     element.onmousedown = startDragging;
 
-
     function dragging(e) {
         e = e || window.event;
         e.preventDefault();
 
-        const parentRect = document.querySelector(".home").getBoundingClientRect();
-        const childRect = element.getBoundingClientRect();
-
-        console.log("parentRect: ", parentRect);
-        console.log("childRect: ", childRect);
-        console.log("Y range: ", parentRect.top, '->', parentRect.bottom - childRect.height);
+        const parent = document.querySelector(".home");
 
 
-        currentX = initialX - e.clientX;
-        currentY = initialY - e.clientY;
+        currentX =(initialX - e.clientX)/ scale;
+        currentY = (initialY - e.clientY)/ scale;
 
         initialX = e.clientX;
         initialY = e.clientY;
 
-        let newX = parseFloat(element.style.left) - currentX;
-        let newY = parseFloat(element.style.top) - currentY;
+        let newX = parseFloat(element.style.left || 0) - currentX;
+        let newY = parseFloat(element.style.top || 0) - currentY;
 
-        newX = Math.max(0, Math.min(newX, parentRect.width - childRect.width));
-        newY = Math.max(0, Math.min(newY, parentRect.height - childRect.height));
 
+        newX = Math.max(0, Math.min(newX, parent.offsetWidth - element.offsetWidth));
+        newY = Math.max(0, Math.min(newY, parent.offsetHeight - element.offsetHeight));
 
         element.style.filter = 'invert(1)';
         element.style.position = 'absolute';
@@ -373,12 +373,12 @@ function dragElement(element) {
         element.style.left = (newX) + 'px';
     }
 
-
-    function stopDragging() {
+    async function stopDragging() {
         element.style.filter = '';
         document.onmouseup = null;
         document.onmousemove = null;
 
+        
         const trashRect = document.querySelector("#trash-folder-icon img").getBoundingClientRect();
         const elementRect = element.getBoundingClientRect();
 
@@ -395,6 +395,9 @@ function dragElement(element) {
             return;
         } else if (overLap && element.id === "system-folder-icon") {
             alertBox("You cant Delete System Folder");
+            setTimeout(() => {
+                window.close();
+            }, 1500);
             element.style.left = originalLeft;
             element.style.top = originalTop;
             return;
@@ -432,7 +435,6 @@ function updateTime() {
 
 updateTime();
 setInterval(updateTime, 1000);
-
 
 
 
@@ -528,8 +530,8 @@ document.getElementById("new-file").addEventListener('click', (e) => {
 
     bringWindowToTop("new-folder");
 
-    win.style.top = (window.innerHeight / 2) - (win.offsetHeight / 2) + 'px';
-    win.style.left = (window.innerWidth / 2) - (win.offsetWidth / 2) + 'px';
+    win.style.top = (window.innerHeight /scale / 2) - (win.offsetHeight / 2) + 'px';
+    win.style.left = (window.innerWidth / scale / 2) - (win.offsetWidth / 2) + 'px';
 });
 
 function createIcons(id, iconSrc, label) {
@@ -739,8 +741,8 @@ function alertBox(content) {
 
     alertBox.style.visibility = "hidden";
     alertBox.style.setProperty('display', 'block', 'important');
-    alertBox.style.left = (window.innerWidth / 2) - (alertBox.offsetWidth / 2) + 'px';
-    alertBox.style.top = (window.innerHeight / 2) - (alertBox.offsetHeight / 2) + 'px';
+    alertBox.style.left = (window.innerWidth/scale / 2) - (alertBox.offsetWidth / 2) + 'px';
+    alertBox.style.top = (window.innerHeight/scale / 2) - (alertBox.offsetHeight / 2) + 'px';
 
     alertBox.style.zIndex = '9998';
 
@@ -823,8 +825,8 @@ function createWindow(id, name, editable = 'false') {
 
     div.style.visibility = "hidden";
     div.style.setProperty("display", "block", "important");
-    div.style.top = (window.innerHeight / 2) - (div.offsetHeight / 2) + "px";
-    div.style.left = (window.innerWidth / 2) - (div.offsetWidth / 2) + "px";
+    div.style.top = (window.innerHeight/ scale / 2) - (div.offsetHeight / 2) + "px";
+    div.style.left = (window.innerWidth/ scale / 2) - (div.offsetWidth / 2) + "px";
     div.style.setProperty("display", "none", "important");
     div.style.visibility = "";
 
@@ -911,6 +913,31 @@ function trashFile(id) {
         updatePrintBtn();
     }
     icon.remove();
+    row--;
+    if(row < 0){
+        row = iconsPerCol;
+        col--;
+    }
+
+    const icons = document.querySelectorAll(".homeIcons");
+    let isFree = false;
+
+    while(!isFree){
+        isFree = true;
+        icons.forEach(icon => {
+            const rowI = Math.round(parseFloat(icon.style.top)/iconSize);
+            const colI = Math.round(parseFloat(icon.style.left)/iconSize);
+
+            if (rowI === row && colI === col) {
+                isFree = false;
+                row++;
+                if(row >= iconsPerCol) {
+                    row = 0;
+                    col++;
+                }
+            }
+        })
+    }
 
     if (trashedFiles.length > 0) {
         document.querySelector("#trash-folder-icon img").src = "assets/icons/trash-full.svg";
@@ -988,8 +1015,8 @@ document.getElementById("print").addEventListener("click", (e) => {
 
     const modal = document.getElementById("print-modal");
     modal.style.setProperty('display', 'block', 'important');
-    modal.style.left = (window.innerWidth / 2) - (modal.offsetWidth / 2) + "px";
-    modal.style.top = (window.innerHeight / 2) - (modal.offsetHeight / 2) + "px";
+    modal.style.left = (window.innerWidth / scale / 2) - (modal.offsetWidth / 2) + "px";
+    modal.style.top = (window.innerHeight / scale / 2) - (modal.offsetHeight / 2) + "px";
     modal.style.zIndex = "9997";
 
     document.activeElement.blur();
