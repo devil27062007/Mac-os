@@ -19,6 +19,9 @@ setActiveFolder(null);
 
 let trashedFiles = [];
 
+const reserved =["trash","Trash","system","System","Guide","instruction-file","new","New","open","player"];
+const folderChildFiles = {};
+
 function init() {
     const homeEl = document.querySelector(".home");
     //Use offset properties to get the logical dimensions
@@ -79,6 +82,11 @@ function init() {
         if (!e.target.closest('.homeIcons')) {
             document.querySelectorAll('.homeIcons').forEach((element) => {
                 element.style.filter = '';
+            })
+        }
+        if(!e.target.closest('.folderIcons')) {
+            document.querySelectorAll(".folderIcons").forEach((e) => {
+                e.style.filter ='';
             })
         }
     });
@@ -188,8 +196,14 @@ function init() {
         const input = document.getElementById("file-create");
         let value = input.value.trim();
 
-        if (value.trim() === "") {
+        if (value === "") {
             alertBox("Sorry Enter Some 'File Name' to create a file")
+            input.value = "";
+            return;
+        }
+
+        if(reserved.includes(value)) {
+            alertBox(`"${value}" is a reserved system name. Try different one.`);
             input.value = "";
             return;
         }
@@ -204,6 +218,7 @@ function init() {
         input.value = "";
         createIcons(`${value}-file-icon`, "assets/icons/hypercard.svg", value);
         createWindow(`${value}-file`, value, "true");
+        input.closest("#new-file").style.setProperty("display","none","important");
     });
 
     //ok button to work for alert button

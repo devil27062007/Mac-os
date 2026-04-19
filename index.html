@@ -1,13 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Launching......</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Mac OS – Login</title>
+    <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Chicago', monospace;
+        }
+
+        body {
+            background-color: var(--surface);
+            transform-origin: top left;
+            transform: scale(2);
+            width: calc(100vw / 2);
+            height: calc(100vh / 2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg,
+                    rgba(255, 0, 0, 0.06),
+                    rgba(0, 225, 0, 0.02),
+                    rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            background: rgba(18, 16, 16, 0.1);
+            animation: crt-flicker 0.01s infinite;
+        }
+
+        @keyframes crt-flicker {
+            0%   { opacity: 0.1; }
+            25%  { opacity: 0.2; }
+            50%  { opacity: 0.05; }
+            75%  { opacity: 0.15; }
+            100% { opacity: 0.1; }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-window {
+            width: 260px;
+        }
+
+        .login-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 20px 12px;
+            gap: 10px;
+        }
+
+        .login-body img {
+            margin-bottom: 4px;
+        }
+
+        .login-body h2 {
+            font-size: 13px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .login-fields {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .login-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-row label {
+            font-size: 11px;
+            width: 60px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .login-row input {
+            flex: 1;
+            font-size: 11px;
+            padding: 2px 4px;
+        }
+
+        .login-actions {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .error-text {
+            font-size: 10px;
+            color: #000;
+            text-align: center;
+            min-height: 14px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="login-container">
+        <div class="window login-window">
+            <div class="title-bar">
+                <button aria-label="Close" class="close" disabled></button>
+                <h1 class="title">Welcome to Mac OS</h1>
+            </div>
+            <div class="separator"></div>
+            <div class="login-body">
+                <img src="assets/icons/happy-mac-icon.svg" alt="Mac" width="40" height="40">
+                <h2>Please log in</h2>
+                <div class="login-fields">
+                    <div class="login-row">
+                        <label for="login-user">Name:</label>
+                        <input id="login-user" type="text" placeholder="" autofocus>
+                    </div>
+                    <div class="login-row">
+                        <label for="login-pass">Password:</label>
+                        <input id="login-pass" type="password" placeholder="">
+                    </div>
+                </div>
+                <p class="error-text" id="login-error">&nbsp;</p>
+                <div class="login-actions">
+                    <button class="btn" id="login-btn">Log In</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        window.location.replace("main.html");
+        const loginBtn = document.getElementById('login-btn');
+        const userInput = document.getElementById('login-user');
+        const passInput = document.getElementById('login-pass');
+        const errorText = document.getElementById('login-error');
+
+        function attemptLogin() {
+            const user = userInput.value.trim();
+            const pass = passInput.value;
+
+            if (user === '' || pass === '') {
+                errorText.textContent = 'Please enter both fields.';
+                return;
+            }
+
+            if (user === 'admin' && pass === 'password') {
+                errorText.textContent = '';
+                window.location.replace('main.html');
+            } else {
+                errorText.textContent = 'Incorrect name or password.';
+                passInput.value = '';
+                passInput.focus();
+            }
+        }
+
+        loginBtn.addEventListener('click', attemptLogin);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') attemptLogin();
+        });
     </script>
 </body>
 
